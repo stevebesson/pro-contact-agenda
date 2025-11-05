@@ -5,6 +5,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Plus } from "lucide-react";
 import { AppointmentDialog } from "@/components/agenda/AppointmentDialog";
 import { AppointmentList } from "@/components/agenda/AppointmentList";
+import { AppointmentReminders } from "@/components/agenda/AppointmentReminders";
 import type { Appointment } from "@/types";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -61,6 +62,8 @@ const Agenda = () => {
           Nouveau rendez-vous
         </Button>
       </div>
+
+      <AppointmentReminders appointments={appointments} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-1 border-border">

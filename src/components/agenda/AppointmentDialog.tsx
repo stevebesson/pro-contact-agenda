@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
@@ -35,6 +36,8 @@ const appointmentSchema = z.object({
   }),
   duration: z.coerce.number().min(15, "Durée minimum 15 minutes"),
   location: z.string().optional(),
+  reminder2Days: z.boolean().optional(),
+  reminder2Hours: z.boolean().optional(),
 });
 
 type AppointmentFormValues = z.infer<typeof appointmentSchema>;
@@ -62,6 +65,8 @@ export const AppointmentDialog = ({
       date: defaultDate || new Date(),
       duration: 60,
       location: "",
+      reminder2Days: true,
+      reminder2Hours: true,
     },
   });
 
@@ -73,6 +78,8 @@ export const AppointmentDialog = ({
       date: data.date,
       duration: data.duration,
       location: data.location,
+      reminder2Days: data.reminder2Days,
+      reminder2Hours: data.reminder2Hours,
       createdAt: appointment?.createdAt || new Date(),
     };
     onSave(newAppointment);
@@ -191,6 +198,43 @@ export const AppointmentDialog = ({
                 </FormItem>
               )}
             />
+            <div className="space-y-3">
+              <FormLabel>Rappels</FormLabel>
+              <FormField
+                control={form.control}
+                name="reminder2Days"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal cursor-pointer">
+                      Rappel 2 jours avant
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="reminder2Hours"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal cursor-pointer">
+                      Rappel 2 heures avant
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+            </div>
             <div className="flex justify-end gap-3">
               <Button
                 type="button"

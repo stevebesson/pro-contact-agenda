@@ -17,6 +17,8 @@ export interface Appointment {
   date: Date;
   duration: number; // in minutes
   location?: string;
+  reminder2Days?: boolean;
+  reminder2Hours?: boolean;
   createdAt: Date;
 }
 
