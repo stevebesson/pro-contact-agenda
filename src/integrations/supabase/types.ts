@@ -33,7 +33,7 @@ export type Database = {
           telephone: string | null
           telephone_secondaire: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
           ville: string | null
         }
         Insert: {
@@ -54,7 +54,7 @@ export type Database = {
           telephone?: string | null
           telephone_secondaire?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           ville?: string | null
         }
         Update: {
@@ -75,7 +75,7 @@ export type Database = {
           telephone?: string | null
           telephone_secondaire?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           ville?: string | null
         }
         Relationships: []
@@ -91,7 +91,7 @@ export type Database = {
           tags: string[] | null
           titre: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           categorie?: string | null
@@ -103,7 +103,7 @@ export type Database = {
           tags?: string[] | null
           titre: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           categorie?: string | null
@@ -115,7 +115,7 @@ export type Database = {
           tags?: string[] | null
           titre?: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -137,7 +137,7 @@ export type Database = {
           rendez_vous_id: string | null
           titre: string
           type: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -148,7 +148,7 @@ export type Database = {
           rendez_vous_id?: string | null
           titre: string
           type: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           created_at?: string | null
@@ -159,7 +159,7 @@ export type Database = {
           rendez_vous_id?: string | null
           titre?: string
           type?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -188,7 +188,7 @@ export type Database = {
           titre: string
           type: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           adresse?: string | null
@@ -206,7 +206,7 @@ export type Database = {
           titre: string
           type?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           adresse?: string | null
@@ -224,7 +224,7 @@ export type Database = {
           titre?: string
           type?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
