@@ -4,30 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Mail, Phone, Building, Users } from "lucide-react";
 import { ContactDialog } from "@/components/contacts/ContactDialog";
+import { useContacts } from "@/hooks/useContacts";
 import type { Contact } from "@/types";
 
 const Contacts = () => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const { contacts, isLoading, updateContact } = useContacts();
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | undefined>();
 
   const filteredContacts = contacts.filter(
     (contact) =>
-      contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.phone.includes(searchTerm)
+      contact.telephone.includes(searchTerm)
   );
-
-  const handleSaveContact = (contact: Contact) => {
-    if (selectedContact) {
-      setContacts(contacts.map((c) => (c.id === contact.id ? contact : c)));
-    } else {
-      setContacts([...contacts, contact]);
-    }
-    setSelectedContact(undefined);
-    setDialogOpen(false);
-  };
 
   const handleEditContact = (contact: Contact) => {
     setSelectedContact(contact);
@@ -65,7 +57,13 @@ const Contacts = () => {
         />
       </div>
 
-      {filteredContacts.length === 0 ? (
+      {isLoading ? (
+        <Card className="border-border">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <p className="text-muted-foreground">Chargement...</p>
+          </CardContent>
+        </Card>
+      ) : filteredContacts.length === 0 ? (
         <Card className="border-border">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Users className="h-12 w-12 text-muted-foreground mb-4" />
@@ -85,10 +83,10 @@ const Contacts = () => {
               onClick={() => handleEditContact(contact)}
             >
               <CardHeader>
-                <CardTitle className="text-lg">{contact.name}</CardTitle>
-                {contact.position && contact.company && (
+                <CardTitle className="text-lg">{contact.prenom} {contact.nom}</CardTitle>
+                {contact.poste && contact.entreprise && (
                   <CardDescription>
-                    {contact.position} chez {contact.company}
+                    {contact.poste} chez {contact.entreprise}
                   </CardDescription>
                 )}
               </CardHeader>
@@ -99,12 +97,12 @@ const Contacts = () => {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Phone className="h-4 w-4" />
-                  <span>{contact.phone}</span>
+                  <span>{contact.telephone}</span>
                 </div>
-                {contact.company && (
+                {contact.entreprise && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Building className="h-4 w-4" />
-                    <span>{contact.company}</span>
+                    <span>{contact.entreprise}</span>
                   </div>
                 )}
               </CardContent>
@@ -115,9 +113,11 @@ const Contacts = () => {
 
       <ContactDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) setSelectedContact(undefined);
+        }}
         contact={selectedContact}
-        onSave={handleSaveContact}
       />
     </div>
   );

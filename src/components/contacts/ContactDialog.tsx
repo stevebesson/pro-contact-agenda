@@ -19,14 +19,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useContacts } from "@/hooks/useContacts";
 import type { Contact } from "@/types";
+import { useEffect } from "react";
 
 const contactSchema = z.object({
-  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
+  nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   email: z.string().email("Email invalide"),
-  phone: z.string().min(10, "Numéro de téléphone invalide"),
-  company: z.string().optional(),
-  position: z.string().optional(),
+  telephone: z.string().min(10, "Numéro de téléphone invalide"),
+  entreprise: z.string().optional(),
+  poste: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -36,40 +39,68 @@ interface ContactDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   contact?: Contact;
-  onSave: (contact: Contact) => void;
 }
 
 export const ContactDialog = ({
   open,
   onOpenChange,
   contact,
-  onSave,
 }: ContactDialogProps) => {
+  const { createContact, updateContact } = useContacts();
+  
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: contact || {
-      name: "",
+    defaultValues: {
+      prenom: "",
+      nom: "",
       email: "",
-      phone: "",
-      company: "",
-      position: "",
+      telephone: "",
+      entreprise: "",
+      poste: "",
       notes: "",
     },
   });
 
+  useEffect(() => {
+    if (contact) {
+      form.reset({
+        prenom: contact.prenom,
+        nom: contact.nom,
+        email: contact.email,
+        telephone: contact.telephone,
+        entreprise: contact.entreprise || "",
+        poste: contact.poste || "",
+        notes: contact.notes || "",
+      });
+    } else {
+      form.reset({
+        prenom: "",
+        nom: "",
+        email: "",
+        telephone: "",
+        entreprise: "",
+        poste: "",
+        notes: "",
+      });
+    }
+  }, [contact, form]);
+
   const onSubmit = (data: ContactFormValues) => {
-    const newContact: Contact = {
-      id: contact?.id || crypto.randomUUID(),
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      company: data.company,
-      position: data.position,
-      notes: data.notes,
-      createdAt: contact?.createdAt || new Date(),
-    };
-    onSave(newContact);
+    if (contact) {
+      updateContact({ id: contact.id, ...data });
+    } else {
+      createContact(data as {
+        prenom: string;
+        nom: string;
+        email: string;
+        telephone: string;
+        entreprise?: string;
+        poste?: string;
+        notes?: string;
+      });
+    }
     form.reset();
+    onOpenChange(false);
   };
 
   return (
@@ -85,19 +116,34 @@ export const ContactDialog = ({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nom complet *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Jean Dupont" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="prenom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prénom *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Jean" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="nom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nom *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Dupont" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -118,7 +164,7 @@ export const ContactDialog = ({
               />
               <FormField
                 control={form.control}
-                name="phone"
+                name="telephone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Téléphone *</FormLabel>
@@ -133,7 +179,7 @@ export const ContactDialog = ({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="company"
+                name="entreprise"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Entreprise</FormLabel>
@@ -146,7 +192,7 @@ export const ContactDialog = ({
               />
               <FormField
                 control={form.control}
-                name="position"
+                name="poste"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Poste</FormLabel>

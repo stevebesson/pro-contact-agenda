@@ -1,12 +1,15 @@
 export interface Contact {
   id: string;
-  name: string;
+  prenom: string;
+  nom: string;
   email: string;
-  phone: string;
-  company?: string;
-  position?: string;
+  telephone: string;
+  entreprise?: string;
+  poste?: string;
   notes?: string;
-  createdAt: Date;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Appointment {
