@@ -21,15 +21,21 @@ export interface Contact {
 
 export interface Appointment {
   id: string;
-  title: string;
+  titre: string;
   description?: string;
-  contactId?: string;
-  date: Date;
-  duration: number; // in minutes
-  location?: string;
-  reminder2Days?: boolean;
-  reminder2Hours?: boolean;
-  createdAt: Date;
+  contact_id?: string;
+  date_debut: string;
+  date_fin: string;
+  duree_minutes: number;
+  lieu?: string;
+  adresse?: string;
+  type?: string;
+  statut?: string;
+  rappel_2jours_envoye?: boolean;
+  rappel_2heures_envoye?: boolean;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Note {

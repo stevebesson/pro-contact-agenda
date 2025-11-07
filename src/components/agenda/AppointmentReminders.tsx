@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell } from "lucide-react";
-import { format, differenceInHours, differenceInDays, isPast } from "date-fns";
+import { format, differenceInHours, differenceInDays, isPast, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Appointment } from "@/types";
 import { toast } from "@/hooks/use-toast";
@@ -17,7 +17,7 @@ export const AppointmentReminders = ({ appointments }: AppointmentRemindersProps
     const now = new Date();
     
     appointments.forEach((appointment) => {
-      const appointmentDate = new Date(appointment.date);
+      const appointmentDate = parseISO(appointment.date_debut);
       
       // Skip past appointments
       if (isPast(appointmentDate)) return;
@@ -27,7 +27,7 @@ export const AppointmentReminders = ({ appointments }: AppointmentRemindersProps
       
       // 2 days reminder
       if (
-        appointment.reminder2Days &&
+        !appointment.rappel_2jours_envoye &&
         daysUntil === 2 &&
         hoursUntil <= 48 &&
         hoursUntil >= 47 &&
@@ -35,20 +35,20 @@ export const AppointmentReminders = ({ appointments }: AppointmentRemindersProps
       ) {
         toast({
           title: "Rappel : Rendez-vous dans 2 jours",
-          description: `${appointment.title} - ${format(appointmentDate, "PPP 'à' HH:mm", { locale: fr })}`,
+          description: `${appointment.titre} - ${format(appointmentDate, "PPP 'à' HH:mm", { locale: fr })}`,
         });
         setShownReminders((prev) => new Set(prev).add(`${appointment.id}-2days`));
       }
       
       // 2 hours reminder
       if (
-        appointment.reminder2Hours &&
+        !appointment.rappel_2heures_envoye &&
         hoursUntil === 2 &&
         !shownReminders.has(`${appointment.id}-2hours`)
       ) {
         toast({
           title: "Rappel : Rendez-vous dans 2 heures",
-          description: `${appointment.title} - ${format(appointmentDate, "PPP 'à' HH:mm", { locale: fr })}`,
+          description: `${appointment.titre} - ${format(appointmentDate, "PPP 'à' HH:mm", { locale: fr })}`,
         });
         setShownReminders((prev) => new Set(prev).add(`${appointment.id}-2hours`));
       }
@@ -58,18 +58,15 @@ export const AppointmentReminders = ({ appointments }: AppointmentRemindersProps
   // Get upcoming reminders
   const upcomingReminders = appointments
     .filter((apt) => {
-      const appointmentDate = new Date(apt.date);
+      const appointmentDate = parseISO(apt.date_debut);
       if (isPast(appointmentDate)) return false;
       
       const hoursUntil = differenceInHours(appointmentDate, new Date());
       const daysUntil = differenceInDays(appointmentDate, new Date());
       
-      return (
-        (apt.reminder2Days && daysUntil <= 2) ||
-        (apt.reminder2Hours && hoursUntil <= 2)
-      );
+      return daysUntil <= 2 || hoursUntil <= 2;
     })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => parseISO(a.date_debut).getTime() - parseISO(b.date_debut).getTime());
 
   if (upcomingReminders.length === 0) return null;
 
@@ -83,7 +80,7 @@ export const AppointmentReminders = ({ appointments }: AppointmentRemindersProps
       </CardHeader>
       <CardContent className="space-y-3">
         {upcomingReminders.map((appointment) => {
-          const appointmentDate = new Date(appointment.date);
+          const appointmentDate = parseISO(appointment.date_debut);
           const hoursUntil = differenceInHours(appointmentDate, new Date());
           const daysUntil = differenceInDays(appointmentDate, new Date());
           
@@ -105,7 +102,7 @@ export const AppointmentReminders = ({ appointments }: AppointmentRemindersProps
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="font-medium">{appointment.title}</p>
+                  <p className="font-medium">{appointment.titre}</p>
                   <p className="text-sm text-muted-foreground">
                     {format(appointmentDate, "PPP 'à' HH:mm", { locale: fr })}
                   </p>
