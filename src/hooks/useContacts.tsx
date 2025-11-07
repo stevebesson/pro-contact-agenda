@@ -28,8 +28,15 @@ export const useContacts = () => {
       nom: string;
       email: string;
       telephone: string;
+      telephone_secondaire?: string;
       entreprise?: string;
       poste?: string;
+      adresse_ligne1?: string;
+      adresse_ligne2?: string;
+      code_postal?: string;
+      ville?: string;
+      pays?: string;
+      tags?: string[];
       notes?: string;
     }) => {
       const { data, error } = await supabase

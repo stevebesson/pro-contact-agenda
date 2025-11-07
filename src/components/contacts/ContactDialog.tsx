@@ -28,8 +28,15 @@ const contactSchema = z.object({
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   email: z.string().email("Email invalide"),
   telephone: z.string().min(10, "Numéro de téléphone invalide"),
+  telephone_secondaire: z.string().optional(),
   entreprise: z.string().optional(),
   poste: z.string().optional(),
+  adresse_ligne1: z.string().optional(),
+  adresse_ligne2: z.string().optional(),
+  code_postal: z.string().optional(),
+  ville: z.string().optional(),
+  pays: z.string().optional(),
+  tags: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -55,8 +62,15 @@ export const ContactDialog = ({
       nom: "",
       email: "",
       telephone: "",
+      telephone_secondaire: "",
       entreprise: "",
       poste: "",
+      adresse_ligne1: "",
+      adresse_ligne2: "",
+      code_postal: "",
+      ville: "",
+      pays: "France",
+      tags: "",
       notes: "",
     },
   });
@@ -68,8 +82,15 @@ export const ContactDialog = ({
         nom: contact.nom,
         email: contact.email,
         telephone: contact.telephone,
+        telephone_secondaire: contact.telephone_secondaire || "",
         entreprise: contact.entreprise || "",
         poste: contact.poste || "",
+        adresse_ligne1: contact.adresse_ligne1 || "",
+        adresse_ligne2: contact.adresse_ligne2 || "",
+        code_postal: contact.code_postal || "",
+        ville: contact.ville || "",
+        pays: contact.pays || "France",
+        tags: contact.tags?.join(", ") || "",
         notes: contact.notes || "",
       });
     } else {
@@ -78,24 +99,44 @@ export const ContactDialog = ({
         nom: "",
         email: "",
         telephone: "",
+        telephone_secondaire: "",
         entreprise: "",
         poste: "",
+        adresse_ligne1: "",
+        adresse_ligne2: "",
+        code_postal: "",
+        ville: "",
+        pays: "France",
+        tags: "",
         notes: "",
       });
     }
   }, [contact, form]);
 
   const onSubmit = (data: ContactFormValues) => {
+    const tagsArray = data.tags ? data.tags.split(",").map(tag => tag.trim()).filter(Boolean) : undefined;
+    const contactData = {
+      ...data,
+      tags: tagsArray,
+    };
+    
     if (contact) {
-      updateContact({ id: contact.id, ...data });
+      updateContact({ id: contact.id, ...contactData });
     } else {
-      createContact(data as {
+      createContact(contactData as {
         prenom: string;
         nom: string;
         email: string;
         telephone: string;
+        telephone_secondaire?: string;
         entreprise?: string;
         poste?: string;
+        adresse_ligne1?: string;
+        adresse_ligne2?: string;
+        code_postal?: string;
+        ville?: string;
+        pays?: string;
+        tags?: string[];
         notes?: string;
       });
     }
@@ -176,6 +217,19 @@ export const ContactDialog = ({
                 )}
               />
             </div>
+            <FormField
+              control={form.control}
+              name="telephone_secondaire"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Téléphone secondaire</FormLabel>
+                  <FormControl>
+                    <Input placeholder="0601020304" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -204,6 +258,95 @@ export const ContactDialog = ({
                 )}
               />
             </div>
+            
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium">Adresse</h3>
+              <FormField
+                control={form.control}
+                name="adresse_ligne1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adresse ligne 1</FormLabel>
+                    <FormControl>
+                      <Input placeholder="123 rue Example" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="adresse_ligne2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adresse ligne 2</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Appartement, étage..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="code_postal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Code postal</FormLabel>
+                      <FormControl>
+                        <Input placeholder="75001" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="ville"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ville</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Paris" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="pays"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pays</FormLabel>
+                    <FormControl>
+                      <Input placeholder="France" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="client, partenaire, fournisseur..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <FormField
               control={form.control}
               name="notes"
